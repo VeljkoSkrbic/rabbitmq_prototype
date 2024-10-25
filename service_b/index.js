@@ -1,35 +1,32 @@
-const express = require('express')
+const express = require('express');
 const cors = require('cors');
-const amqplib = require('amqplib')
+const RabbitMQService = require('./rabbitMQService');
+const db = require('./models');
 
-const app = express()
-app.use(cors());
+const app = express();
 
 const port = 5001;
 
-var connection = null;
-var channel = null;
-var queue = "a_b";
+const jobReadRouter = require('./routers/jobReadRouter');
 
-async function setup(){
-    connection = await amqplib.connect('amqp://rabbitmq:rabbitmq@rabbitmq')
-    channel = await connection.createChannel()
-  
-    await channel.assertQueue(queue, { durable: false })
+app.use(cors());
+app.use(express.json());
+app.use("/jobRead", jobReadRouter);
 
-    console.log(' [*] Waiting for messages in %s. To exit press CTRL+C', queue)
 
-    channel.consume(queue, (msg) => {
-        console.log(' [x] Received %s', msg.content.toString())
-    }, { noAck: true })
-}
+(async () => {
+    try {
+        await RabbitMQService.connect();
+        RabbitMQService.consumeQueue("q_a", (msg) => {
+            console.log(' [x] Received %s', msg.content.toString());
+        });
 
-app.get('/', async (req, res) => {
-    channel.sendToQueue("a_a", Buffer.from('Hello World!'))
-    return res.send('Hello World!')
-})
-
-setup()
-app.listen(port, () => {
-    console.log(`Example app listening on port ${port}`)
-})
+        await db.sequelize.sync();
+        app.listen(port, () => {
+            console.log(`Example app listening on port ${port}`);
+        });
+    } catch (error) {
+        console.error("Error during setup:", error);
+        process.exit(1);
+    }
+})();
