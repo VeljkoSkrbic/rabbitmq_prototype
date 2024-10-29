@@ -18,7 +18,7 @@ app.use("/jobWrite", jobWriteRouter);
     try {
         await RabbitMQService.connect();
         RabbitMQService.consumeQueue("q_b", (msg) => {
-            console.log(' [x] Received %s', msg.content.toString());
+            console.log('Service A Received from service B:', msg.content.toString());
         });
 
         await db.sequelize.sync();

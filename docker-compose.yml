@@ -64,7 +64,6 @@ services:
     ports:
       - "15672:15672"
       - "5672:5672"
-      - "5552:5552"
     restart: always
     environment:
       RABBITMQ_DEFAULT_USER: rabbitmq
@@ -75,3 +74,9 @@ services:
       timeout: 10s
       retries: 3
     
+  # k6:
+  #   container_name: k6
+  #   image: grafana/k6
+  #   volumes:
+  #     - ./service_b/scripts:/scripts
+  #   entrypoint: ["k6", "run", "/scripts/test.js"]

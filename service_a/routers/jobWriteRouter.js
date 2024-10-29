@@ -37,7 +37,7 @@ router.post('/', async (req, res) => {
         return res.status(500).send('Error creating job');
     }
     console.log('Created job:', job.name);
-    RabbitMQService.sendToQueue("q_b", Buffer.from(JSON.stringify(job)));
+    RabbitMQService.sendToQueue("q_a", Buffer.from(JSON.stringify(job)));
     return res.json(job);
 });
 

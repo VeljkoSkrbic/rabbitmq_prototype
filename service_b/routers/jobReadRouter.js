@@ -11,33 +11,20 @@ router.get('/', async (req, res) => {
         console.error('Error getting jobs:', error);
         return res.status(500).send('Error getting jobs');
     }
-    console.log('Jobs:', jobs);
+    // console.log('Jobs:', jobs);
     return res.json(jobs);
 });
 
-router.get('/test', async (req, res) => {
-    console.log('Sending message to queue');
-    RabbitMQService.sendToQueue("q_b", "Hello from service A!");
-    return res.send('Hello World!');
-});
-
-router.post('/', async (req, res) => {
-    const { name, description, status, imageId } = req.body;
+// add a new route that get job by id
+router.get('/:id', async (req, res) => {
     let job;
     try{
-        job = await db.Job.create({
-            name,
-            description,
-            status,
-            imageId,
-            createdAt: new Date()
-        });
+        job = await db.Job.findByPk(req.params.id);
     } catch(error){
-        console.error('Error creating job:', error);
-        return res.status(500).send('Error creating job');
+        console.error('Error getting job:', error);
+        return res.status(500).send('Error getting job');
     }
-    console.log('Created job:', job.name);
-    RabbitMQService.sendToQueue("q_b", Buffer.from(JSON.stringify(job)));
+    console.log('Job:', job);
     return res.json(job);
 });
 
