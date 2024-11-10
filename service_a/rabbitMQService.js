@@ -9,7 +9,7 @@ class RabbitMQService {
 
     async connect() {
         if (!this.connection) {
-            this.connection = await amqplib.connect('amqp://rabbitmq:rabbitmq@rabbitmq');
+            this.connection = await amqplib.connect('amqp://rabbitmq:rabbitmq@rabbitmq-service.default.svc.cluster.local');
             this.channel = await this.connection.createChannel();
             await this.channel.assertQueue(this.queue, { durable: false });
             console.log(` [*] Connected to RabbitMQ, queue: ${this.queue}`);

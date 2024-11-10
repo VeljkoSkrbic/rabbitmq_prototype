@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mysql-config-b
+data:
+  # mysql-url: mysql-service-b
+  mysql-url: mysql-service-b.default.svc.cluster.local

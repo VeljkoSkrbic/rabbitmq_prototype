@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql-deployment-b
+  labels:
+    app: mysql-b
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mysql-b
+  template:
+    metadata:
+      labels:
+        app: mysql-b
+    spec:
+      containers:
+      - name: mysqldb-b
+        image: mysql:latest
+        ports:
+        - containerPort: 3306
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom: 
+            secretKeyRef:
+              name: mysql-secret-b
+              key: mysql-password
+        - name: MYSQL_DATABASE
+          value: b
+        readinessProbe:
+          exec:
+            command:
+              - mysqladmin 
+              - ping 
+              - "-h"
+              - localhost 
+              - "-P" 
+              - "3306" 
+              - "-u"
+              - root
+              - "--password=mysqlpassword"
+          initialDelaySeconds: 20
+          periodSeconds: 10
+          failureThreshold: 3
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql-service-b
+spec:
+  selector:
+    app: mysql-b
+  ports:
+    - protocol: TCP
+      port: 3306
+      targetPort: 3306
+

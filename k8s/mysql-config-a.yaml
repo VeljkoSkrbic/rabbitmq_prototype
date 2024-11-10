@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mysql-config-a
+data:
+  # mysql-url: mysql-service-a
+  mysql-url: mysql-service-a.default.svc.cluster.local
